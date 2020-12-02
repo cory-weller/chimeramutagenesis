@@ -31,6 +31,8 @@ print(args.filter_freq)
 import pandas as pd
 import numpy as np
 import sys
+import functions as f
+from functions import fasta
 
 # RUN CODE
 
@@ -44,13 +46,21 @@ codons.columns = ["triplet", "AA", "freq", "fkp", "count"]
 
 
 putativeCodonsTable = codons[codons.freq >= args.filter_freq]
+putativeCodonsTable['triplet'] = putativeCodonsTable['triplet'].str.replace("U","T")
+
 
 assert putativeCodonsTable['AA'].nunique() == 21, (
     "Codon frequency filter of %s eliminates some amino acids. Try a lower filter." % (args.filter_freq)
 )
 
+allAminoAcids = list(putativeCodonsTable['AA'].unique())
+
 # retrieve rows with maximum frequency, grouped by amino acid
-codons = putativeCodonsTable.loc[putativeCodonsTable.groupby('AA')['count'].idxmax()]
+abundantCodons = putativeCodonsTable.loc[putativeCodonsTable.groupby('AA')['count'].idxmax()]
+
+
+f.sampleCodon(putativeCodonsTable, "F")
+
 
 
 exit
